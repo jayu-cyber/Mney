@@ -45,6 +45,7 @@ async function DashboardPage() {
             initialBudget={budgetData?.budget}
             currentExpenses={budgetData?.currentExpenses || 0}
             accountId={defaultAccunt.id}
+            currency={defaultAccunt.currency}
           />
         </div>
       )}
