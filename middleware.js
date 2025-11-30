@@ -1,13 +1,7 @@
 import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const aj = arcjet({
-  key: process.env.ARCJET_KEY,
-  rules: [
-    shield({ mode: "LIVE" }),
-    detectBot(),
-  ],
-});
+
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
@@ -19,10 +13,7 @@ const isProtectedRoute = createRouteMatcher([
 // ---- MAIN MIDDLEWARE ----
 export default createMiddleware(async (req) => {
   // 1️⃣ Run Arcjet
-  const decision = await aj.protect(req);
-  if (decision.isDenied()) {
-    return new Response("Access denied", { status: 403 });
-  }
+
 
   // 2️⃣ Run Clerk
   return clerkMiddleware((auth, req) => {
