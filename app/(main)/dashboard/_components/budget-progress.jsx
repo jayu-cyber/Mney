@@ -65,29 +65,56 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
           </h3>
           {initialBudget && typeof currentExpenses === "number" ? (
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              <span className="font-semibold text-gray-900 dark:text-white">${currentExpenses.toFixed(2)}</span> {t("of")} <span className="font-semibold text-indigo-600">${Number(initialBudget?.amount ?? 0).toFixed(2)}</span> {t("spent")}
+              <span className="font-semibold text-gray-900 dark:text-white">
+                ${currentExpenses.toFixed(2)}
+              </span>{" "}
+              {t("of")}{" "}
+              <span className="font-semibold text-indigo-600">
+                ${Number(initialBudget?.amount ?? 0).toFixed(2)}
+              </span>{" "}
+              {t("spent")}
             </p>
           ) : (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{t("noBudgetSet")}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              {t("noBudgetSet")}
+            </p>
           )}
         </div>
       </div>
 
       {/* Content */}
       <div className="p-6 space-y-6">
+        {!initialBudget && (
+          <div className="text-center py-8">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              {t("noBudgetSet")}
+            </p>
+            <Button
+              onClick={() => setIsEditing(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              <Pencil className="h-4 w-4 mr-2" />
+              {t("createBudget") || "Create Budget"}
+            </Button>
+          </div>
+        )}
         {initialBudget && (
           <div className="space-y-4">
             {/* Progress Bar */}
             <div className="space-y-2">
               <div className="flex justify-between items-center mb-2">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</p>
-                <span className={`text-sm font-bold ${
-                  percentUsed >= 90
-                    ? "text-red-600 dark:text-red-400"
-                    : percentUsed >= 75
-                    ? "text-yellow-600 dark:text-yellow-400"
-                    : "text-green-600 dark:text-green-400"
-                }`}>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Progress
+                </p>
+                <span
+                  className={`text-sm font-bold ${
+                    percentUsed >= 90
+                      ? "text-red-600 dark:text-red-400"
+                      : percentUsed >= 75
+                        ? "text-yellow-600 dark:text-yellow-400"
+                        : "text-green-600 dark:text-green-400"
+                  }`}
+                >
                   {percentUsed.toFixed(1)}% {t("used")}
                 </span>
               </div>
@@ -97,8 +124,8 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
                     percentUsed >= 90
                       ? "bg-gradient-to-r from-red-500 to-red-600"
                       : percentUsed >= 75
-                      ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
-                      : "bg-gradient-to-r from-indigo-600 to-teal-500"
+                        ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                        : "bg-gradient-to-r from-indigo-600 to-teal-500"
                   }`}
                   style={{ width: `${Math.min(percentUsed, 100)}%` }}
                 ></div>
@@ -108,33 +135,47 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
             {/* Budget Stats */}
             <div className="grid grid-cols-3 gap-4 mt-6">
               <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-lg p-4">
-                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Budget</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                  Budget
+                </p>
                 <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
                   ${Number(initialBudget?.amount ?? 0).toFixed(0)}
                 </p>
               </div>
               <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4">
-                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Spent</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                  Spent
+                </p>
                 <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
                   ${currentExpenses.toFixed(0)}
                 </p>
               </div>
-              <div className={`bg-gradient-to-br ${
-                percentUsed >= 90
-                  ? "from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20"
-                  : percentUsed >= 75
-                  ? "from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20"
-                  : "from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20"
-              } rounded-lg p-4`}>
-                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Remaining</p>
-                <p className={`text-xl font-bold mt-1 ${
+              <div
+                className={`bg-gradient-to-br ${
                   percentUsed >= 90
-                    ? "text-red-600 dark:text-red-400"
+                    ? "from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20"
                     : percentUsed >= 75
-                    ? "text-yellow-600 dark:text-yellow-400"
-                    : "text-teal-600 dark:text-teal-400"
-                }`}>
-                  ${Math.max(0, Number(initialBudget?.amount ?? 0) - currentExpenses).toFixed(0)}
+                      ? "from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20"
+                      : "from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20"
+                } rounded-lg p-4`}
+              >
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                  Remaining
+                </p>
+                <p
+                  className={`text-xl font-bold mt-1 ${
+                    percentUsed >= 90
+                      ? "text-red-600 dark:text-red-400"
+                      : percentUsed >= 75
+                        ? "text-yellow-600 dark:text-yellow-400"
+                        : "text-teal-600 dark:text-teal-400"
+                  }`}
+                >
+                  $
+                  {Math.max(
+                    0,
+                    Number(initialBudget?.amount ?? 0) - currentExpenses
+                  ).toFixed(0)}
                 </p>
               </div>
             </div>
@@ -180,6 +221,35 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
                 </Button>
               )}
             </div>
+          </div>
+        )}
+        {isEditing && !initialBudget && (
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              value={newBudget}
+              onChange={(e) => setNewBudget(e.target.value)}
+              className="flex-1"
+              placeholder={t("enterNewBudget")}
+              autoFocus
+              disabled={isLoading}
+            />
+            <Button
+              size="sm"
+              onClick={handleUpdateBudget}
+              disabled={isLoading}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Check className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={isLoading}
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         )}
       </div>
