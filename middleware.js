@@ -8,18 +8,7 @@ const isProtectedRoute = createRouteMatcher([
   "/import(.*)",
 ]);
 
-const aj = arcjet({
-  key: process.env.ARCJET_KEY,
-  rules: [
-    shield({
-      mode: "LIVE",
-    }),
-    detectBot({
-      mode: "LIVE",
-      allow: ["CATEGORY:SEARCH_ENGINE"],
-    }),
-  ],
-});
+
 
 // Clerk middleware that protects routes and redirects unauthenticated users
 const clerkAuth = clerkMiddleware(async (auth, req) => {
@@ -31,7 +20,7 @@ const clerkAuth = clerkMiddleware(async (auth, req) => {
   }
 });
 
-export default createMiddleware(aj, clerkAuth);
+export default createMiddleware( clerkAuth);
 
 export const config = {
   matcher: [
