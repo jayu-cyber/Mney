@@ -1,5 +1,4 @@
 "use client";
-import { TransactionStatus } from "@/lib/generated/prisma";
 import { endOfDay, format, startOfDay, subDays } from "date-fns";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "@/lib/use-translation";
@@ -93,7 +92,8 @@ const AccountsChart = ({ transactions = [] }) => {
   return (
     <Card>
       <CardHeader
-        className={"flex flex-row items-center justify-between space-y-0 pb-7"}>
+        className={"flex flex-row items-center justify-between space-y-0 pb-7"}
+      >
         <CardTitle className={"text-base font-normal"}>
           {t("recentTransactions")}
         </CardTitle>
@@ -131,7 +131,8 @@ const AccountsChart = ({ transactions = [] }) => {
                 totals.income - totals.expense >= 0
                   ? "text-green-500"
                   : "text-red-500"
-              }`}>
+              }`}
+            >
               ${(totals.income - totals.expense).toFixed(2)}
             </p>
           </div>
@@ -147,29 +148,32 @@ const AccountsChart = ({ transactions = [] }) => {
                 right: 10,
                 left: 10,
                 bottom: 0,
-              }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="date" />
-              <YAxis 
-              fontSize={12}
-              tickLines={false}
-              axisLine={false}
-              tickFormatter={(value) => `$${value}`}/>
-              <Tooltip formatter={(value) => [`$${value.toFixed(2)}`,undefined]} />
+              <YAxis
+                fontSize={12}
+                tickLines={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value}`}
+              />
+              <Tooltip
+                formatter={(value) => [`$${value.toFixed(2)}`, undefined]}
+              />
               <Legend />
               <Bar
                 dataKey="income"
                 name={"Income"}
                 fill="#12ef12"
-              radius={[4,4,0,0]}
+                radius={[4, 4, 0, 0]}
               />
               <Bar
                 dataKey="expense"
                 name={"Expense"}
                 fill="#fc1212"
-                radius={[4,4,0,0]}
+                radius={[4, 4, 0, 0]}
               />
-             
             </BarChart>
           </ResponsiveContainer>
         </div>
