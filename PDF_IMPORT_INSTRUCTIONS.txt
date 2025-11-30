@@ -1,0 +1,18 @@
+// PDF Import Usage Instructions
+// 1. Go to your app's import page or feature.
+// 2. Select the PDF bank statement file to upload.
+// 3. The backend will extract transactions and add them to your database automatically.
+//
+// API Endpoint: /api/import/pdf
+// Method: POST
+// Form field: 'file' (PDF file)
+//
+// Example fetch usage:
+//
+// const formData = new FormData();
+// formData.append('file', fileInput.files[0]);
+// fetch('/api/import/pdf', { method: 'POST', body: formData })
+//   .then(res => res.json())
+//   .then(data => console.log(data));
+//
+// The import logic will parse the PDF, extract transaction rows, and save them. You can customize the extraction regex in app/api/import/pdf/route.js for your bank's format.
