@@ -26,12 +26,21 @@ export async function getCurrentBudget(accountId) {
     const startMonth = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
-      1
+      1,
+      0,
+      0,
+      0,
+      0
     );
+    // Set to end of last day of the month (23:59:59.999)
     const endMonth = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + 1,
-      0
+      0,
+      23,
+      59,
+      59,
+      999
     );
 
     const expenses = await db.transaction.aggregate({
@@ -49,7 +58,7 @@ export async function getCurrentBudget(accountId) {
       },
     });
 
-      return {
+    return {
       budget: budget ? { ...budget, amount: budget.amount.toNumber() } : null,
       currentExpenses: expenses._sum.amount
         ? expenses._sum.amount.toNumber()
