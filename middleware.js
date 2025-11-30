@@ -1,4 +1,3 @@
-import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isProtectedRoute = createRouteMatcher([
@@ -8,25 +7,17 @@ const isProtectedRoute = createRouteMatcher([
   "/import(.*)",
 ]);
 
-
-
-// Clerk middleware that protects routes and redirects unauthenticated users
-const clerkAuth = clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
-
-  if (!userId && isProtectedRoute(req)) {
-    const { redirectToSignIn } = await auth();
-    return redirectToSignIn();
+export default clerkMiddleware((auth, req) => {
+  if (isProtectedRoute(req)) {
+    auth().protect();
   }
 });
 
-export default createMiddleware( clerkAuth);
-
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
+    // --- This is Clerk's official recommended matcher ---
+    "/((?!.+\\.[\\w]+$|_next).*)",
+    "/",
     "/(api|trpc)(.*)",
   ],
 };
