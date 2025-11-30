@@ -6,61 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Check, Pencil, X } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
-import { updateBudget, getCurrentBudget } from "@/actions/budget";
-import { useApp } from "@/lib/app-context";
-import { formatCurrency, getLocale, convertCurrency } from "@/lib/currency";
+import { updateBudget } from "@/actions/budget";
+import CurrencyAmount from "@/components/currency-amount";
 
-export function BudgetProgress({
-  initialBudget,
-  currentExpenses,
-  accountId,
-  currency = "USD",
-}) {
-  const { language } = useApp();
-  const locale = getLocale(language);
+export function BudgetProgress({ initialBudget, currentExpenses }) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
-  const [budget, setBudget] = useState(initialBudget);
-  const [expenses, setExpenses] = useState(currentExpenses);
   const [newBudget, setNewBudget] = useState(
     initialBudget?.amount?.toString() || ""
   );
 
-  // Helper function to format currency based on account currency
-  const formatBudgetCurrency = (amount) => {
-    const converted = convertCurrency(amount, "INR", currency);
-    return formatCurrency(converted, currency, locale);
-  };
-
-  // Refresh budget data periodically or when page comes into focus
-  useEffect(() => {
-    if (!accountId) return;
-
-    const refreshBudgetData = async () => {
-      try {
-        const data = await getCurrentBudget(accountId);
-        setBudget(data.budget);
-        setExpenses(data.currentExpenses || 0);
-      } catch (err) {
-        console.error("Error refreshing budget:", err);
-      }
-    };
-
-    // Refresh on mount and when page becomes visible
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        refreshBudgetData();
-      }
-    };
-
-    window.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [accountId]);
-
-  const percentUsed = budget ? (expenses / budget.amount) * 100 : 0;
+  const percentUsed = initialBudget
+    ? (currentExpenses / initialBudget.amount) * 100
+    : 0;
 
   const {
     loading: isLoading,
@@ -83,8 +41,6 @@ export function BudgetProgress({
   useEffect(() => {
     if (updatedBudget?.success) {
       setIsEditing(false);
-      setBudget(updatedBudget.data);
-      setNewBudget(updatedBudget.data.amount.toString());
       toast.success(t("budgetUpdated"));
     }
   }, [updatedBudget]);
@@ -96,7 +52,7 @@ export function BudgetProgress({
   }, [error]);
 
   const handleCancel = () => {
-    setNewBudget(budget?.amount?.toString() || "");
+    setNewBudget(initialBudget?.amount?.toString() || "");
     setIsEditing(false);
   };
 
@@ -108,14 +64,14 @@ export function BudgetProgress({
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
             {t("monthlyBudget")} ({t("defaultAccount")})
           </h3>
-          {budget && typeof expenses === "number" ? (
+          {initialBudget && typeof currentExpenses === "number" ? (
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               <span className="font-semibold text-gray-900 dark:text-white">
-                {formatBudgetCurrency(expenses)}
+                <CurrencyAmount amount={currentExpenses} />
               </span>{" "}
               {t("of")}{" "}
               <span className="font-semibold text-indigo-600">
-                {formatBudgetCurrency(Number(budget?.amount ?? 0))}
+                <CurrencyAmount amount={Number(initialBudget?.amount ?? 0)} />
               </span>{" "}
               {t("spent")}
             </p>
@@ -129,21 +85,7 @@ export function BudgetProgress({
 
       {/* Content */}
       <div className="p-6 space-y-6">
-        {!budget && (
-          <div className="text-center py-8">
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              {t("noBudgetSet")}
-            </p>
-            <Button
-              onClick={() => setIsEditing(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
-            >
-              <Pencil className="h-4 w-4 mr-2" />
-              {t("createBudget") || "Create Budget"}
-            </Button>
-          </div>
-        )}
-        {budget && (
+        {initialBudget && (
           <div className="space-y-4">
             {/* Progress Bar */}
             <div className="space-y-2">
@@ -184,7 +126,7 @@ export function BudgetProgress({
                   Budget
                 </p>
                 <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
-                  {formatBudgetCurrency(Number(budget?.amount ?? 0))}
+                  <CurrencyAmount amount={Number(initialBudget?.amount ?? 0)} />
                 </p>
               </div>
               <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4">
@@ -192,7 +134,7 @@ export function BudgetProgress({
                   Spent
                 </p>
                 <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
-                  {formatBudgetCurrency(expenses)}
+                  <CurrencyAmount amount={currentExpenses} />
                 </p>
               </div>
               <div
@@ -216,9 +158,12 @@ export function BudgetProgress({
                         : "text-teal-600 dark:text-teal-400"
                   }`}
                 >
-                  {formatBudgetCurrency(
-                    Math.max(0, Number(budget?.amount ?? 0) - expenses)
-                  )}
+                  <CurrencyAmount
+                    amount={Math.max(
+                      0,
+                      Number(initialBudget?.amount ?? 0) - currentExpenses
+                    )}
+                  />
                 </p>
               </div>
             </div>
@@ -264,35 +209,6 @@ export function BudgetProgress({
                 </Button>
               )}
             </div>
-          </div>
-        )}
-        {isEditing && !budget && (
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              value={newBudget}
-              onChange={(e) => setNewBudget(e.target.value)}
-              className="flex-1"
-              placeholder={t("enterNewBudget")}
-              autoFocus
-              disabled={isLoading}
-            />
-            <Button
-              size="sm"
-              onClick={handleUpdateBudget}
-              disabled={isLoading}
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={isLoading}
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
         )}
       </div>
