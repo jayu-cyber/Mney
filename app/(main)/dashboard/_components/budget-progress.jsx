@@ -7,8 +7,17 @@ import { Check, Pencil, X } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
 import { updateBudget, getCurrentBudget } from "@/actions/budget";
+import { useApp } from "@/lib/app-context";
+import { formatCurrency, getLocale, convertCurrency } from "@/lib/currency";
 
-export function BudgetProgress({ initialBudget, currentExpenses, accountId }) {
+export function BudgetProgress({
+  initialBudget,
+  currentExpenses,
+  accountId,
+  currency = "USD",
+}) {
+  const { language } = useApp();
+  const locale = getLocale(language);
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [budget, setBudget] = useState(initialBudget);
@@ -16,6 +25,12 @@ export function BudgetProgress({ initialBudget, currentExpenses, accountId }) {
   const [newBudget, setNewBudget] = useState(
     initialBudget?.amount?.toString() || ""
   );
+
+  // Helper function to format currency based on account currency
+  const formatBudgetCurrency = (amount) => {
+    const converted = convertCurrency(amount, "INR", currency);
+    return formatCurrency(converted, currency, locale);
+  };
 
   // Refresh budget data periodically or when page comes into focus
   useEffect(() => {
@@ -96,11 +111,11 @@ export function BudgetProgress({ initialBudget, currentExpenses, accountId }) {
           {budget && typeof expenses === "number" ? (
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               <span className="font-semibold text-gray-900 dark:text-white">
-                ${expenses.toFixed(2)}
+                {formatBudgetCurrency(expenses)}
               </span>{" "}
               {t("of")}{" "}
               <span className="font-semibold text-indigo-600">
-                ${Number(budget?.amount ?? 0).toFixed(2)}
+                {formatBudgetCurrency(Number(budget?.amount ?? 0))}
               </span>{" "}
               {t("spent")}
             </p>
@@ -169,7 +184,7 @@ export function BudgetProgress({ initialBudget, currentExpenses, accountId }) {
                   Budget
                 </p>
                 <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
-                  ${Number(budget?.amount ?? 0).toFixed(0)}
+                  {formatBudgetCurrency(Number(budget?.amount ?? 0))}
                 </p>
               </div>
               <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4">
@@ -177,7 +192,7 @@ export function BudgetProgress({ initialBudget, currentExpenses, accountId }) {
                   Spent
                 </p>
                 <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
-                  ${expenses.toFixed(0)}
+                  {formatBudgetCurrency(expenses)}
                 </p>
               </div>
               <div
@@ -201,9 +216,8 @@ export function BudgetProgress({ initialBudget, currentExpenses, accountId }) {
                         : "text-teal-600 dark:text-teal-400"
                   }`}
                 >
-                  $
-                  {Math.max(0, Number(budget?.amount ?? 0) - expenses).toFixed(
-                    0
+                  {formatBudgetCurrency(
+                    Math.max(0, Number(budget?.amount ?? 0) - expenses)
                   )}
                 </p>
               </div>
