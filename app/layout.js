@@ -18,18 +18,18 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <AppProvider>
-        <html lang="en">
-          <body className={`${inter.className}`}>
+      <html lang="en">
+        <body className={inter.className}>
+          <AppProvider>
             <Toaster richColors />
             <SignInListener />
             <ClientErrorLogger />
             <Header />
             <main className="min-h-screen">{children}</main>
             <Footer />
-          </body>
-        </html>
-      </AppProvider>
+          </AppProvider>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
