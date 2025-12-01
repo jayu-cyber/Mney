@@ -51,7 +51,10 @@ export async function getCurrentBudget(accountId) {
           gte: startMonth,
           lte: endMonth,
         },
-        accountId,
+        // Count expenses across all accounts so the monthly budget
+        // reflects total spending, not just a single account.
+        // If you want per-account budgets later, re-introduce this filter.
+        // accountId,
       },
       _sum: {
         amount: true,
