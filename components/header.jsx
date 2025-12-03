@@ -19,9 +19,9 @@ const Header = async () => {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
           <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
-            <span className="font-extrabold text-xl text-white">M</span>
+            <span className="font-extrabold text-xl text-white">B</span>
           </div>
-              <h1 className="font-extrabold text-2xl bg-gradient-to-r from-indigo-600 to-teal-500 bg-clip-text text-transparent hidden sm:block">Mney</h1>
+              <h1 className="font-extrabold text-2xl bg-gradient-to-r from-indigo-600 to-teal-500 bg-clip-text text-transparent hidden sm:block">BKEC</h1>
         </Link>
 
         {/* Center Navigation (large screens) */}
