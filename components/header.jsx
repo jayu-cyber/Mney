@@ -22,7 +22,7 @@ const Header = async () => {
           className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
         >
           <Image
-            src="https://www.residentialschools.in/vendor-details/basavakalyan-engineering-college,-basavakalyan/MjgwMw=="
+            src="/bkec.jpg"
             alt="BKEC Logo"
             width={40}
             height={40}
